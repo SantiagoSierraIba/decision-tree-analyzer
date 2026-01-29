@@ -15,16 +15,16 @@ const TerminalNode = ({ data, selected }: NodeProps) => {
 
   return (
     <div style={{ position: 'relative' }}>
-      {/* Triangle shape using CSS borders */}
+      {/* Triangle shape using CSS borders - Zinc color */}
       <div
         style={{
           width: 0,
           height: 0,
-          borderLeft: `32px solid ${nodeData.isOptimal ? '#22c55e' : '#f59e0b'}`,
+          borderLeft: `32px solid ${nodeData.isOptimal ? '#22c55e' : '#a1a1aa'}`,
           borderTop: '24px solid transparent',
           borderBottom: '24px solid transparent',
           borderRight: 0,
-          boxShadow: selected ? '0 0 0 2px #fcd34d' : 'none',
+          boxShadow: selected ? '0 0 0 2px #94a3b8' : 'none',
         }}
       >
         <Handle
@@ -34,12 +34,12 @@ const TerminalNode = ({ data, selected }: NodeProps) => {
             left: '-36px',
             width: '12px',
             height: '12px',
-            background: '#4b5563',
+            background: '#64748b',
             border: '2px solid white',
           }}
         />
       </div>
-      {/* Label */}
+      {/* Label - Slate color */}
       <div
         style={{
           position: 'absolute',
@@ -49,12 +49,12 @@ const TerminalNode = ({ data, selected }: NodeProps) => {
           fontSize: '12px',
           fontWeight: 'bold',
           whiteSpace: 'nowrap',
-          color: nodeData.isOptimal ? '#15803d' : '#b45309',
+          color: nodeData.isOptimal ? '#15803d' : '#64748b',
         }}
       >
         {nodeData.label}
       </div>
-      {/* Payoff value */}
+      {/* Payoff value - Keep green/red for important data distinction */}
       <div
         style={{
           position: 'absolute',
@@ -67,7 +67,7 @@ const TerminalNode = ({ data, selected }: NodeProps) => {
           color: isPositive ? '#16a34a' : '#dc2626',
         }}
       >
-        ${payoff.toLocaleString()}
+        ${payoff.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </div>
     </div>
   );

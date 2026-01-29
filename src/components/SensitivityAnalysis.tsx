@@ -68,17 +68,17 @@ const SensitivityAnalysis: React.FC<SensitivityAnalysisProps> = ({
     const emvRange = maxEMV - minEMV || 1;
     const valueRange = result.values[result.values.length - 1] - result.values[0] || 1;
 
-    // Draw axes
-    ctx.strokeStyle = '#374151';
-    ctx.lineWidth = 2;
+    // Draw axes - muted slate color
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(padding, padding);
     ctx.lineTo(padding, height - padding);
     ctx.lineTo(width - padding, height - padding);
     ctx.stroke();
 
-    // Draw grid lines
-    ctx.strokeStyle = '#e5e7eb';
+    // Draw grid lines - subtle
+    ctx.strokeStyle = '#e2e8f0';
     ctx.lineWidth = 1;
     for (let i = 1; i <= 5; i++) {
       const y = padding + (height - 2 * padding) * (i / 5);
@@ -88,9 +88,9 @@ const SensitivityAnalysis: React.FC<SensitivityAnalysisProps> = ({
       ctx.stroke();
     }
 
-    // Draw data line
-    ctx.strokeStyle = '#3b82f6';
-    ctx.lineWidth = 3;
+    // Draw data line - slate color
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 2;
     ctx.beginPath();
 
     result.values.forEach((value, index) => {
@@ -108,7 +108,7 @@ const SensitivityAnalysis: React.FC<SensitivityAnalysisProps> = ({
     // Draw crossover points
     result.crossoverPoints.forEach(point => {
       const x = padding + ((point.value - result.values[0]) / valueRange) * (width - 2 * padding);
-      ctx.strokeStyle = '#ef4444';
+      ctx.strokeStyle = '#dc2626';
       ctx.setLineDash([5, 5]);
       ctx.beginPath();
       ctx.moveTo(x, padding);
@@ -117,8 +117,8 @@ const SensitivityAnalysis: React.FC<SensitivityAnalysisProps> = ({
       ctx.setLineDash([]);
     });
 
-    // Draw axis labels
-    ctx.fillStyle = '#374151';
+    // Draw axis labels - slate color
+    ctx.fillStyle = '#64748b';
     ctx.font = '12px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(result.variableName, width / 2, height - 10);
@@ -159,11 +159,11 @@ const SensitivityAnalysis: React.FC<SensitivityAnalysisProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full mx-4 max-h-[90vh] overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-gray-800">Sensitivity Analysis</h2>
+        <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+          <h2 className="text-xl font-bold text-slate-800">Sensitivity Analysis</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 text-2xl"
+            className="text-slate-400 hover:text-slate-600 text-2xl"
           >
             ×
           </button>
@@ -172,7 +172,7 @@ const SensitivityAnalysis: React.FC<SensitivityAnalysisProps> = ({
         <div className="px-6 py-4 overflow-y-auto max-h-[70vh]">
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-slate-600 mb-1">
                 Variable Type
               </label>
               <select
@@ -182,7 +182,7 @@ const SensitivityAnalysis: React.FC<SensitivityAnalysisProps> = ({
                   setSelectedTarget('');
                   setResult(null);
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 text-slate-700"
               >
                 <option value="payoff">Payoff (Terminal Node)</option>
                 <option value="probability">Probability (Chance Branch)</option>
@@ -190,7 +190,7 @@ const SensitivityAnalysis: React.FC<SensitivityAnalysisProps> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-slate-600 mb-1">
                 Select {variableType === 'payoff' ? 'Terminal Node' : 'Branch'}
               </label>
               <select
@@ -205,7 +205,7 @@ const SensitivityAnalysis: React.FC<SensitivityAnalysisProps> = ({
                     setMaxValue(baseValue + Math.abs(baseValue) * 0.5);
                   }
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 text-slate-700"
               >
                 {variableType === 'payoff'
                   ? terminalNodes.map(node => (
@@ -222,7 +222,7 @@ const SensitivityAnalysis: React.FC<SensitivityAnalysisProps> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-slate-600 mb-1">
                 Minimum Value
               </label>
               <input
@@ -230,12 +230,12 @@ const SensitivityAnalysis: React.FC<SensitivityAnalysisProps> = ({
                 value={minValue}
                 onChange={(e) => setMinValue(parseFloat(e.target.value) || 0)}
                 step={variableType === 'probability' ? 0.01 : 1}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 text-slate-700"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-slate-600 mb-1">
                 Maximum Value
               </label>
               <input
@@ -243,7 +243,7 @@ const SensitivityAnalysis: React.FC<SensitivityAnalysisProps> = ({
                 value={maxValue}
                 onChange={(e) => setMaxValue(parseFloat(e.target.value) || 0)}
                 step={variableType === 'probability' ? 0.01 : 1}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 text-slate-700"
               />
             </div>
           </div>
@@ -251,18 +251,18 @@ const SensitivityAnalysis: React.FC<SensitivityAnalysisProps> = ({
           <button
             onClick={runAnalysis}
             disabled={!selectedTarget}
-            className="w-full px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition disabled:bg-gray-300 mb-6"
+            className="w-full px-4 py-2 bg-slate-500 text-white rounded hover:bg-slate-600 transition disabled:bg-slate-200 disabled:text-slate-400 mb-6"
           >
             Run Sensitivity Analysis
           </button>
 
           {result && (
             <div className="space-y-4">
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="font-semibold text-gray-700 mb-2">
+              <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h4 className="font-semibold text-slate-700 mb-2">
                   Variable: {result.variableName}
                 </h4>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-slate-500">
                   Base Value: {variableType === 'probability'
                     ? result.baseValue.toFixed(2)
                     : '$' + result.baseValue.toLocaleString()}
@@ -273,7 +273,7 @@ const SensitivityAnalysis: React.FC<SensitivityAnalysisProps> = ({
                 ref={canvasRef}
                 width={600}
                 height={300}
-                className="w-full border border-gray-200 rounded-lg"
+                className="w-full border border-slate-200 rounded-lg"
               />
 
               {result.crossoverPoints.length > 0 && (
@@ -289,12 +289,12 @@ const SensitivityAnalysis: React.FC<SensitivityAnalysisProps> = ({
                 </div>
               )}
 
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <h4 className="font-semibold text-blue-700 mb-2">EMV Range</h4>
-                <p className="text-sm text-blue-600">
+              <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h4 className="font-semibold text-slate-700 mb-2">EMV Range</h4>
+                <p className="text-sm text-slate-500">
                   Min EMV: ${Math.min(...result.emvResults).toLocaleString(undefined, { maximumFractionDigits: 2 })}
                 </p>
-                <p className="text-sm text-blue-600">
+                <p className="text-sm text-slate-500">
                   Max EMV: ${Math.max(...result.emvResults).toLocaleString(undefined, { maximumFractionDigits: 2 })}
                 </p>
               </div>
@@ -302,10 +302,10 @@ const SensitivityAnalysis: React.FC<SensitivityAnalysisProps> = ({
           )}
         </div>
 
-        <div className="px-6 py-4 border-t border-gray-200">
+        <div className="px-6 py-4 border-t border-slate-200">
           <button
             onClick={onClose}
-            className="w-full px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition"
+            className="w-full px-4 py-2 bg-slate-500 text-white rounded hover:bg-slate-600 transition"
           >
             Close
           </button>

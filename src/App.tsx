@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { ReactFlowProvider } from '@xyflow/react';
 import type { Connection } from '@xyflow/react';
 import { v4 as uuidv4 } from 'uuid';
@@ -12,6 +12,8 @@ import OptionsDialog from './components/OptionsDialog';
 
 import { TreeNode, TreeEdge, NodeType, CalculationResult, AnalysisReport as ReportType, DecisionTree, CalculationSettings } from './types';
 import { calculateEMV, validateProbabilities, generateReport, defaultSettings } from './utils/calculationEngine';
+import { autoLayoutTree } from './utils/autoLayout';
+import { exportTreeToPDF } from './utils/pdfExport';
 import { saveCurrentTree, loadCurrentTree, exportTreeToJSON, importTreeFromJSON, downloadJSON } from './utils/storage';
 import { useHistory } from './hooks/useHistory';
 import { Template } from './templates';
@@ -22,6 +24,7 @@ const App: React.FC = () => {
   const [treeName, setTreeName] = useState('New Decision Tree');
   const [nodes, setNodes] = useState<TreeNode[]>([]);
   const [edges, setEdges] = useState<TreeEdge[]>([]);
+  const canvasRef = useRef<HTMLDivElement>(null);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
   const [calculationResults, setCalculationResults] = useState<Map<string, CalculationResult>>(new Map());
@@ -312,6 +315,17 @@ const App: React.FC = () => {
     setShowSensitivity(true);
   }, [nodes, handleCalculate]);
 
+  const handleAutoLayout = useCallback(() => {
+    if (nodes.length === 0) return;
+    saveState();
+    const layoutedNodes = autoLayoutTree(nodes, edges);
+    setNodes(layoutedNodes);
+  }, [nodes, edges, saveState]);
+
+  const handleExportPDF = useCallback(() => {
+    exportTreeToPDF(treeName, canvasRef.current);
+  }, [treeName]);
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -341,7 +355,7 @@ const App: React.FC = () => {
 
   return (
     <ReactFlowProvider>
-      <div className="h-screen flex flex-col bg-gray-100">
+      <div className="h-screen flex flex-col bg-slate-50">
         <Toolbar
           treeName={treeName}
           onTreeNameChange={setTreeName}
@@ -350,6 +364,7 @@ const App: React.FC = () => {
           onClear={handleClear}
           onSave={handleSave}
           onExport={handleExport}
+          onExportPDF={handleExportPDF}
           onImport={handleImport}
           onLoadTemplate={handleLoadTemplate}
           onUndo={handleUndo}
@@ -359,11 +374,12 @@ const App: React.FC = () => {
           onShowReport={handleShowReport}
           onShowSensitivity={handleShowSensitivity}
           onShowOptions={() => setShowOptions(true)}
+          onAutoLayout={handleAutoLayout}
           validationErrors={validationErrors}
         />
 
         <div className="flex-1 flex overflow-hidden">
-          <div className="flex-1 relative">
+          <div className="flex-1 relative" ref={canvasRef}>
             <TreeCanvas
               treeNodes={nodes}
               treeEdges={edges}
@@ -377,15 +393,15 @@ const App: React.FC = () => {
 
             {nodes.length === 0 && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="text-center text-gray-500 bg-white bg-opacity-90 p-8 rounded-lg shadow-lg">
-                  <h2 className="text-2xl font-bold mb-4">Welcome to Decision Tree Analyzer</h2>
-                  <p className="mb-4">Get started by:</p>
-                  <ul className="text-left space-y-2 mb-4">
-                    <li>- Click <strong>Decision</strong> or <strong>Chance</strong> to add a root node</li>
-                    <li>- Load a pre-built <strong>Template</strong> from the toolbar</li>
-                    <li>- <strong>Import</strong> an existing tree from JSON</li>
+                <div className="text-center text-slate-500 bg-white bg-opacity-90 p-8 rounded-lg shadow-lg">
+                  <h2 className="text-2xl font-bold mb-4 text-slate-700">Welcome to Decision Tree Analyzer</h2>
+                  <p className="mb-4 text-slate-500">Get started by:</p>
+                  <ul className="text-left space-y-2 mb-4 text-slate-500">
+                    <li>- Click <strong className="text-slate-600">Decision</strong> or <strong className="text-slate-600">Chance</strong> to add a root node</li>
+                    <li>- Load a pre-built <strong className="text-slate-600">Template</strong> from the toolbar</li>
+                    <li>- <strong className="text-slate-600">Import</strong> an existing tree from JSON</li>
                   </ul>
-                  <p className="text-sm">
+                  <p className="text-sm text-slate-400">
                     Inspired by TreePlan for Excel - build decision trees with automatic EMV calculation
                   </p>
                 </div>
@@ -393,9 +409,9 @@ const App: React.FC = () => {
             )}
           </div>
 
-          <div className="w-80 bg-white border-l border-gray-200 overflow-y-auto">
-            <div className="p-4 border-b border-gray-200 bg-gray-50">
-              <h2 className="text-lg font-semibold text-gray-800">Properties</h2>
+          <div className="w-80 bg-white border-l border-slate-200 overflow-y-auto">
+            <div className="p-4 border-b border-slate-200 bg-slate-50">
+              <h2 className="text-lg font-semibold text-slate-700">Properties</h2>
             </div>
             <PropertyEditor
               selectedNode={selectedNode}
@@ -408,19 +424,19 @@ const App: React.FC = () => {
               parentNode={parentNode}
             />
 
-            <div className="p-4 border-t border-gray-200 bg-gray-50">
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">Legend</h3>
-              <div className="space-y-2 text-sm">
+            <div className="p-4 border-t border-slate-200 bg-slate-50">
+              <h3 className="text-sm font-semibold text-slate-600 mb-2">Legend</h3>
+              <div className="space-y-2 text-sm text-slate-500">
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-blue-500 transform rotate-45 rounded-sm" />
+                  <div className="w-4 h-4 bg-gray-500 transform rotate-45 rounded-sm" />
                   <span>Decision Node (Choose best option)</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-emerald-500 rounded-full" />
+                  <div className="w-4 h-4 bg-slate-400 rounded-full" />
                   <span>Chance Node (Probabilistic outcomes)</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-0 h-0 border-l-8 border-y-4 border-y-transparent border-l-amber-500" />
+                  <div className="w-0 h-0 border-l-8 border-y-4 border-y-transparent border-l-zinc-400" />
                   <span>Terminal Node (Final payoff)</span>
                 </div>
                 <div className="flex items-center gap-2 mt-3">

@@ -9,6 +9,7 @@ interface ToolbarProps {
   onClear: () => void;
   onSave: () => void;
   onExport: () => void;
+  onExportPDF: () => void;
   onImport: (json: string) => void;
   onLoadTemplate: (template: Template) => void;
   onUndo: () => void;
@@ -18,6 +19,7 @@ interface ToolbarProps {
   onShowReport: () => void;
   onShowSensitivity: () => void;
   onShowOptions: () => void;
+  onAutoLayout: () => void;
   validationErrors: string[];
 }
 
@@ -29,6 +31,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   onClear,
   onSave,
   onExport,
+  onExportPDF,
   onImport,
   onLoadTemplate,
   onUndo,
@@ -38,9 +41,11 @@ const Toolbar: React.FC<ToolbarProps> = ({
   onShowReport,
   onShowSensitivity,
   onShowOptions,
+  onAutoLayout,
   validationErrors,
 }) => {
   const [showTemplates, setShowTemplates] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileImport = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,98 +64,97 @@ const Toolbar: React.FC<ToolbarProps> = ({
   };
 
   return (
-    <div className="bg-white border-b border-gray-200 px-4 py-3">
+    <div className="bg-white border-b border-slate-200 px-4 py-3">
       <div className="flex flex-wrap items-center gap-4">
         <div className="flex items-center gap-2">
           <input
             type="text"
             value={treeName}
             onChange={(e) => onTreeNameChange(e.target.value)}
-            className="px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-semibold"
+            className="px-3 py-1.5 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 text-lg font-semibold text-slate-800"
             placeholder="Tree Name"
           />
         </div>
 
-        <div className="h-8 w-px bg-gray-300" />
-
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">Add Root:</span>
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-slate-500">Add Root:</span>
           <button
             onClick={() => onAddRootNode('decision')}
-            className="px-3 py-1.5 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition flex items-center gap-1"
+            className="px-3 py-1.5 border border-slate-200 text-slate-600 text-sm rounded hover:bg-slate-50 transition flex items-center gap-1"
             title="Add Decision Node"
           >
-            <span className="w-3 h-3 border border-white transform rotate-45 inline-block" />
+            <span className="w-3 h-3 border border-slate-400 transform rotate-45 inline-block" />
             Decision
           </button>
           <button
             onClick={() => onAddRootNode('chance')}
-            className="px-3 py-1.5 bg-emerald-500 text-white text-sm rounded hover:bg-emerald-600 transition flex items-center gap-1"
+            className="px-3 py-1.5 border border-slate-200 text-slate-600 text-sm rounded hover:bg-slate-50 transition flex items-center gap-1"
             title="Add Chance Node"
           >
-            <span className="w-3 h-3 border border-white rounded-full inline-block" />
+            <span className="w-3 h-3 border border-slate-400 rounded-full inline-block" />
             Chance
           </button>
         </div>
-
-        <div className="h-8 w-px bg-gray-300" />
 
         <div className="flex items-center gap-2">
           <button
             onClick={onUndo}
             disabled={!canUndo}
-            className={`px-3 py-1.5 text-sm rounded transition ${
+            className={`px-3 py-1.5 text-sm rounded transition border ${
               canUndo
-                ? 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                ? 'border-slate-200 hover:bg-slate-50 text-slate-600'
+                : 'border-slate-100 text-slate-300 cursor-not-allowed'
             }`}
             title="Undo (Ctrl+Z)"
           >
-            ↩ Undo
+            Undo
           </button>
           <button
             onClick={onRedo}
             disabled={!canRedo}
-            className={`px-3 py-1.5 text-sm rounded transition ${
+            className={`px-3 py-1.5 text-sm rounded transition border ${
               canRedo
-                ? 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                ? 'border-slate-200 hover:bg-slate-50 text-slate-600'
+                : 'border-slate-100 text-slate-300 cursor-not-allowed'
             }`}
             title="Redo (Ctrl+Y)"
           >
-            ↪ Redo
+            Redo
+          </button>
+          <button
+            onClick={onAutoLayout}
+            className="px-3 py-1.5 border border-slate-200 text-slate-600 text-sm rounded hover:bg-slate-50 transition"
+            title="Auto-arrange nodes"
+          >
+            Auto Layout
           </button>
         </div>
-
-        <div className="h-8 w-px bg-gray-300" />
 
         <button
           onClick={onCalculate}
           className="px-4 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition font-medium"
         >
-          ▶ Calculate
+          Calculate
         </button>
 
         <button
           onClick={onShowOptions}
-          className="px-3 py-1.5 bg-gray-500 text-white text-sm rounded hover:bg-gray-600 transition"
+          className="px-3 py-1.5 border border-slate-200 text-slate-600 text-sm rounded hover:bg-slate-50 transition"
           title="Calculation Options"
         >
-          ⚙ Options
+          Options
         </button>
-
-        <div className="h-8 w-px bg-gray-300" />
 
         <div className="flex items-center gap-2">
           <div className="relative">
             <button
               onClick={() => setShowTemplates(!showTemplates)}
-              className="px-3 py-1.5 bg-purple-500 text-white text-sm rounded hover:bg-purple-600 transition"
+              className="px-3 py-1.5 border border-slate-200 text-slate-600 text-sm rounded hover:bg-slate-50 transition"
             >
-              Templates ▼
+              Templates
             </button>
             {showTemplates && (
-              <div className="absolute top-full left-0 mt-1 w-64 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+              <div className="absolute top-full left-0 mt-1 w-64 bg-white border border-slate-200 rounded-md shadow-lg z-50">
                 {templates.map((template) => (
                   <button
                     key={template.name}
@@ -158,10 +162,10 @@ const Toolbar: React.FC<ToolbarProps> = ({
                       onLoadTemplate(template);
                       setShowTemplates(false);
                     }}
-                    className="w-full px-4 py-2 text-left hover:bg-gray-100 border-b border-gray-100 last:border-b-0"
+                    className="w-full px-4 py-2 text-left hover:bg-slate-50 border-b border-slate-100 last:border-b-0"
                   >
-                    <p className="font-medium text-gray-800">{template.name}</p>
-                    <p className="text-xs text-gray-500">{template.description}</p>
+                    <p className="font-medium text-slate-700">{template.name}</p>
+                    <p className="text-xs text-slate-400">{template.description}</p>
                   </button>
                 ))}
               </div>
@@ -170,37 +174,64 @@ const Toolbar: React.FC<ToolbarProps> = ({
 
           <button
             onClick={onShowReport}
-            className="px-3 py-1.5 bg-indigo-500 text-white text-sm rounded hover:bg-indigo-600 transition"
+            className="px-3 py-1.5 border border-slate-200 text-slate-600 text-sm rounded hover:bg-slate-50 transition"
           >
             Report
           </button>
 
           <button
             onClick={onShowSensitivity}
-            className="px-3 py-1.5 bg-orange-500 text-white text-sm rounded hover:bg-orange-600 transition"
+            className="px-3 py-1.5 border border-slate-200 text-slate-600 text-sm rounded hover:bg-slate-50 transition"
           >
             Sensitivity
           </button>
         </div>
 
-        <div className="h-8 w-px bg-gray-300" />
-
         <div className="flex items-center gap-2">
           <button
             onClick={onSave}
-            className="px-3 py-1.5 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition"
+            className="px-3 py-1.5 border border-slate-200 text-slate-600 text-sm rounded hover:bg-slate-50 transition"
           >
             Save
           </button>
-          <button
-            onClick={onExport}
-            className="px-3 py-1.5 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition"
-          >
-            Export
-          </button>
+
+          <div className="relative">
+            <button
+              onClick={() => setShowExportMenu(!showExportMenu)}
+              className="px-3 py-1.5 border border-slate-200 text-slate-600 text-sm rounded hover:bg-slate-50 transition flex items-center gap-1"
+            >
+              Export
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {showExportMenu && (
+              <div className="absolute top-full left-0 mt-1 w-40 bg-white border border-slate-200 rounded-md shadow-lg z-50">
+                <button
+                  onClick={() => {
+                    onExport();
+                    setShowExportMenu(false);
+                  }}
+                  className="w-full px-4 py-2 text-left hover:bg-slate-50 border-b border-slate-100 text-sm text-slate-700"
+                >
+                  Export as JSON
+                </button>
+                <button
+                  onClick={() => {
+                    onExportPDF();
+                    setShowExportMenu(false);
+                  }}
+                  className="w-full px-4 py-2 text-left hover:bg-slate-50 text-sm text-slate-700"
+                >
+                  Export as PDF
+                </button>
+              </div>
+            )}
+          </div>
+
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="px-3 py-1.5 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition"
+            className="px-3 py-1.5 border border-slate-200 text-slate-600 text-sm rounded hover:bg-slate-50 transition"
           >
             Import
           </button>
@@ -213,7 +244,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
           />
           <button
             onClick={onClear}
-            className="px-3 py-1.5 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition"
+            className="px-3 py-1.5 border border-red-200 text-red-600 text-sm rounded hover:bg-red-50 transition"
           >
             Clear
           </button>
@@ -221,9 +252,9 @@ const Toolbar: React.FC<ToolbarProps> = ({
       </div>
 
       {validationErrors.length > 0 && (
-        <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded-md">
-          <p className="text-sm font-medium text-yellow-800">Validation Warnings:</p>
-          <ul className="text-sm text-yellow-700 list-disc list-inside">
+        <div className="mt-2 p-2 bg-slate-50 border border-slate-200 rounded-md">
+          <p className="text-sm font-medium text-slate-700">Validation Warnings:</p>
+          <ul className="text-sm text-slate-500 list-disc list-inside">
             {validationErrors.map((error, index) => (
               <li key={index}>{error}</li>
             ))}

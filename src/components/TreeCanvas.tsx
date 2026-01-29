@@ -63,7 +63,7 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
     });
   }, [treeNodes, calculationResults, optimalPath]);
 
-  // Convert TreeEdges to ReactFlow edges
+  // Convert TreeEdges to ReactFlow edges - muted colors
   const initialEdges: Edge[] = useMemo(() => {
     return treeEdges.map(edge => {
       const isOptimal = optimalPath.has(edge.id);
@@ -85,21 +85,21 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
         target: edge.target,
         label: labelText,
         labelStyle: {
-          fill: isOptimal ? '#166534' : '#374151',
+          fill: isOptimal ? '#166534' : '#64748b',
           fontWeight: isOptimal ? 700 : 500,
           fontSize: 11,
         },
         labelBgStyle: {
-          fill: isOptimal ? '#dcfce7' : '#f3f4f6',
+          fill: isOptimal ? '#dcfce7' : '#f8fafc',
           fillOpacity: 0.9,
         },
         style: {
-          stroke: isOptimal ? '#22c55e' : '#6b7280',
-          strokeWidth: isOptimal ? 3 : 2,
+          stroke: isOptimal ? '#22c55e' : '#94a3b8',
+          strokeWidth: isOptimal ? 2.5 : 1.5,
         },
         markerEnd: {
           type: MarkerType.ArrowClosed,
-          color: isOptimal ? '#22c55e' : '#6b7280',
+          color: isOptimal ? '#22c55e' : '#94a3b8',
         },
         animated: isOptimal,
       };
@@ -148,16 +148,17 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
     [onNodeDragStop]
   );
 
+  // Minimap colors - muted grays
   const nodeColor = useCallback((node: Node) => {
     switch (node.type) {
       case 'decision':
-        return '#3b82f6';
-      case 'chance':
-        return '#10b981';
-      case 'terminal':
-        return '#f59e0b';
-      default:
         return '#6b7280';
+      case 'chance':
+        return '#94a3b8';
+      case 'terminal':
+        return '#a1a1aa';
+      default:
+        return '#94a3b8';
     }
   }, []);
 
@@ -180,8 +181,8 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
         defaultEdgeOptions={{ type: 'smoothstep' }}
       >
         <Controls />
-        <MiniMap nodeColor={nodeColor} maskColor="rgba(0, 0, 0, 0.1)" />
-        <Background variant={BackgroundVariant.Dots} gap={20} size={1} />
+        <MiniMap nodeColor={nodeColor} maskColor="rgba(0, 0, 0, 0.05)" />
+        <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#e2e8f0" />
       </ReactFlow>
     </div>
   );
