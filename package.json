@@ -2,6 +2,7 @@
   "name": "decision-tree-analyzer",
   "version": "1.0.0",
   "description": "Interactive Decision Tree Analysis web application inspired by TreePlan - Build decision trees, calculate Expected Monetary Value (EMV), and find optimal decision paths using backward induction.",
+  "homepage": "https://santiagosierraiba.github.io/decision-tree-analyzer",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
@@ -28,7 +29,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -49,6 +52,7 @@
     ]
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.18"
+    "@tailwindcss/postcss": "^4.1.18",
+    "gh-pages": "^6.3.0"
   }
 }
