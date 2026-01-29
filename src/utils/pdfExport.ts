@@ -1,8 +1,9 @@
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 
 /**
  * Export the decision tree canvas as a high-definition PDF
+ * Uses html-to-image for better SVG rendering (edges, labels)
  */
 export async function exportTreeToPDF(
   treeName: string,
@@ -48,18 +49,21 @@ export async function exportTreeToPDF(
     maxX += padding;
     maxY += padding;
 
-    // Capture the canvas with high resolution
+    // Capture the canvas with high resolution using html-to-image
     const scale = 3; // Higher scale for better quality
-    const canvas = await html2canvas(canvasElement, {
-      scale: scale,
-      useCORS: true,
-      allowTaint: true,
+    const imgData = await toPng(canvasElement, {
+      pixelRatio: scale,
       backgroundColor: '#f8fafc',
-      logging: false,
-      // Capture the full element
-      width: canvasElement.offsetWidth,
-      height: canvasElement.offsetHeight,
-    } as Parameters<typeof html2canvas>[1]);
+      filter: (node) => {
+        // Exclude controls and minimap from the export
+        const className = node.className;
+        if (typeof className === 'string') {
+          if (className.includes('react-flow__controls')) return false;
+          if (className.includes('react-flow__minimap')) return false;
+        }
+        return true;
+      },
+    });
 
     // Calculate PDF dimensions to fit the tree on a single page
     const treeWidth = maxX - minX;
@@ -79,16 +83,13 @@ export async function exportTreeToPDF(
       format: [pdfWidth, pdfHeight],
     });
 
-    // Convert canvas to image
-    const imgData = canvas.toDataURL('image/png', 1.0);
-
     // Calculate scaling to fit the image on the page with margins
     const margin = 10;
     const availableWidth = pdfWidth - (margin * 2);
     const availableHeight = pdfHeight - (margin * 2) - 15; // Extra space for title
 
-    const imgWidth = canvas.width / scale;
-    const imgHeight = canvas.height / scale;
+    const imgWidth = canvasElement.offsetWidth;
+    const imgHeight = canvasElement.offsetHeight;
 
     const scaleX = availableWidth / imgWidth;
     const scaleY = availableHeight / imgHeight;
