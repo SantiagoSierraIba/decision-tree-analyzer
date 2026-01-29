@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/decision-tree-analyzer/static/css/main.655b32b5.css",
+    "main.js": "/decision-tree-analyzer/static/js/main.b892eba1.js",
+    "static/js/453.e41663a5.chunk.js": "/decision-tree-analyzer/static/js/453.e41663a5.chunk.js",
+    "index.html": "/decision-tree-analyzer/index.html",
+    "main.655b32b5.css.map": "/decision-tree-analyzer/static/css/main.655b32b5.css.map",
+    "main.b892eba1.js.map": "/decision-tree-analyzer/static/js/main.b892eba1.js.map",
+    "453.e41663a5.chunk.js.map": "/decision-tree-analyzer/static/js/453.e41663a5.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.655b32b5.css",
+    "static/js/main.b892eba1.js"
+  ]
+}
